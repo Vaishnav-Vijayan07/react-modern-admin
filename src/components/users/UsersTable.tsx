@@ -1,237 +1,339 @@
-import React, { useState } from "react";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import React, { useState, useMemo } from "react";
+import { Loader2, Plus, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import UserModal from "./UserModal";
+import {
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  useReactTable,
+  ColumnDef,
+} from "@tanstack/react-table";
+import { Input } from "@/components/ui/input";
+import { useUsers } from "@/contexts/UsersContext";
 
-interface User {
-  id: string;
+interface Office {
+  id: number;
   name: string;
   email: string;
-  role: string;
+  phone_number: string;
+  address: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface User {
+  id: number;
+  rank: string;
+  blood_group: string;
+  mobile_number: string;
+  email: string;
+  date_of_birth: string;
+  service_start_date: string;
+  residential_address: string;
+  office_id: number;
+  status?: "active" | "inactive" | "pending";
+  login_id?: string;
+  full_name: string;
+  last_donated_date?: string | null;
+  profile_photo?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  Office?: Office;
+}
+
+interface FormValues {
+  full_name: string;
+  rank: string;
+  blood_group: string;
+  mobile_number: string;
+  email: string;
+  password?: string;
+  date_of_birth: string;
+  service_start_date: string;
+  residential_address: string;
+  office_id: number;
   status: "active" | "inactive" | "pending";
-  lastActive: string;
 }
 
-interface UsersTableProps {
-  users?: User[];
-}
+const ITEMS_PER_PAGE = 5;
 
-const mockUsers: User[] = [
-  {
-    id: "1",
-    name: "John Doe",
-    email: "john.doe@example.com",
-    role: "Admin",
-    status: "active",
-    lastActive: "2023-06-15",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    email: "jane.smith@example.com",
-    role: "Editor",
-    status: "active",
-    lastActive: "2023-06-14",
-  },
-  {
-    id: "3",
-    name: "Robert Johnson",
-    email: "robert.johnson@example.com",
-    role: "Viewer",
-    status: "inactive",
-    lastActive: "2023-05-20",
-  },
-  {
-    id: "4",
-    name: "Emily Davis",
-    email: "emily.davis@example.com",
-    role: "Editor",
-    status: "active",
-    lastActive: "2023-06-12",
-  },
-  {
-    id: "5",
-    name: "Michael Wilson",
-    email: "michael.wilson@example.com",
-    role: "Viewer",
-    status: "pending",
-    lastActive: "2023-06-10",
-  },
-  {
-    id: "6",
-    name: "Sarah Brown",
-    email: "sarah.brown@example.com",
-    role: "Editor",
-    status: "active",
-    lastActive: "2023-06-13",
-  },
-  {
-    id: "7",
-    name: "David Miller",
-    email: "david.miller@example.com",
-    role: "Admin",
-    status: "inactive",
-    lastActive: "2023-05-25",
-  },
-];
+const UsersView = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const [globalFilter, setGlobalFilter] = useState("");
 
-const UsersTable: React.FC<UsersTableProps> = ({ users = mockUsers }) => {
-  const [sortedUsers, setSortedUsers] = useState<User[]>(users);
-  const [sortConfig, setSortConfig] = useState<{
-    key: keyof User;
-    direction: "asc" | "desc";
-  } | null>(null);
+  const { users, isLoading, error, addUser, updateUser, deleteUser } = useUsers();
 
-  const handleSort = (key: keyof User) => {
-    let direction: "asc" | "desc" = "asc";
+  // Define columns for TanStack Table
+  const columns: any = useMemo(
+    () => [
+      {
+        header: "Full Name",
+        accessorKey: "full_name",
+        cell: ({ row }) => <span className="font-medium">{row.original.full_name || "N/A"}</span>,
+        enableSorting: true,
+        enableGlobalFilter: true,
+      },
+      {
+        header: "Email",
+        accessorKey: "email",
+        enableSorting: true,
+        enableGlobalFilter: true,
+      },
+      {
+        header: "Blood Group",
+        accessorKey: "blood_group",
+        enableSorting: true,
+        enableGlobalFilter: true,
+      },
+      {
+        header: "Office",
+        accessorKey: "Office.name",
+        cell: ({ row }) => row.original.Office?.name || "N/A",
+        enableSorting: true,
+        enableGlobalFilter: true,
+      },
+      {
+        header: "Status",
+        accessorKey: "status",
+        cell: ({ row }) => row.original.status,
+        enableSorting: true,
+        enableGlobalFilter: true,
+      },
+      {
+        header: "Actions",
+        id: "actions",
+        cell: ({ row }) => (
+          <div className="flex space-x-2">
+            <Button variant="outline" size="sm" onClick={() => handleEditClick(row.original)}>
+              <Pencil className="h-4 w-4 mr-1" /> Edit
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-destructive border-destructive hover:bg-destructive hover:text-white"
+              onClick={() => handleOpenDeleteDialog(row.original)}
+            >
+              <Trash2 className="h-4 w-4 mr-1" /> Delete
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    []
+  );
 
-    if (sortConfig && sortConfig.key === key) {
-      direction = sortConfig.direction === "asc" ? "desc" : "asc";
-    }
+  // TanStack Table setup
+  const table = useReactTable({
+    data: users,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: ITEMS_PER_PAGE,
+      },
+    },
+    state: {
+      globalFilter,
+    },
+    onGlobalFilterChange: setGlobalFilter,
+  });
 
-    const sorted = [...sortedUsers].sort((a, b) => {
-      if (a[key] < b[key]) return direction === "asc" ? -1 : 1;
-      if (a[key] > b[key]) return direction === "asc" ? 1 : -1;
-      return 0;
-    });
+  // const handleOpenModal = (user: User | null = null) => {
+  //   console.log("Opening modal with user:", user); // Debug
+  //   setEditingUser(user);
+  //   setIsModalOpen(true);
+  // };
 
-    setSortedUsers(sorted);
-    setSortConfig({ key, direction });
+  const handleAddClick = () => {
+    setEditingUser(null);
+    setIsModalOpen(true);
   };
 
-  const getStatusBadgeVariant = (status: User["status"]) => {
-    switch (status) {
-      case "active":
-        return "default";
-      case "inactive":
-        return "secondary";
-      case "pending":
-        return "outline";
-      default:
-        return "default";
+  const handleEditClick = (user: User) => {
+    setEditingUser(user);
+    setIsModalOpen(true);
+  };
+
+  const handleAddUser = async (data: FormValues) => {
+    try {
+      console.log("Submitting form data:", data); // Debug
+      if (editingUser) {
+        await updateUser(editingUser.id, data);
+      } else {
+        await addUser(data);
+      }
+      setEditingUser(null);
+      setIsModalOpen(false);
+      table.setPageIndex(0); // Reset to first page
+    } catch (err) {
+      console.error("Error adding/updating user:", err);
     }
   };
+
+  const handleOpenDeleteDialog = (user: User) => {
+    setUserToDelete(user);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteUser = async () => {
+    if (userToDelete) {
+      await deleteUser(userToDelete.id);
+      table.setPageIndex(0); // Reset to first page
+    }
+    setIsDeleteDialogOpen(false);
+    setUserToDelete(null);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] p-6">
+        <Loader2 className="h-12 w-12 text-primary animate-spin" />
+        <p className="mt-4 text-lg text-muted-foreground">Loading users...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 text-red-500">
+        {error}
+        <Button onClick={() => window.location.reload()} className="mt-4">
+          Retry
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-background w-full">
       <Card>
         <CardHeader>
-          <CardTitle>Users</CardTitle>
+          <div className="flex justify-between items-center">
+            <CardTitle>Users</CardTitle>
+            <Button onClick={() => handleAddClick()} className="bg-primary hover:bg-primary/90">
+              <Plus className="mr-2 h-4 w-4" /> Add User
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
+          {/* Global Filter */}
+          <div className="mb-4">
+            <Input
+              placeholder="Search all columns..."
+              value={globalFilter}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+              className="max-w-sm"
+            />
+          </div>
+
+          {/* TanStack Table */}
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead
-                  onClick={() => handleSort("name")}
-                  className="cursor-pointer"
-                >
-                  <div className="flex items-center">
-                    Name
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                  </div>
-                </TableHead>
-                <TableHead
-                  onClick={() => handleSort("email")}
-                  className="cursor-pointer"
-                >
-                  <div className="flex items-center">
-                    Email
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                  </div>
-                </TableHead>
-                <TableHead
-                  onClick={() => handleSort("role")}
-                  className="cursor-pointer"
-                >
-                  <div className="flex items-center">
-                    Role
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                  </div>
-                </TableHead>
-                <TableHead
-                  onClick={() => handleSort("status")}
-                  className="cursor-pointer"
-                >
-                  <div className="flex items-center">
-                    Status
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                  </div>
-                </TableHead>
-                <TableHead
-                  onClick={() => handleSort("lastActive")}
-                  className="cursor-pointer"
-                >
-                  <div className="flex items-center">
-                    Last Active
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                  </div>
-                </TableHead>
-                <TableHead className="w-[80px]">Actions</TableHead>
-              </TableRow>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {/* Sl. No Header */}
+                  <TableHead>Sl. No</TableHead>
+
+                  {/* Rest of Headers */}
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      <div className="flex items-center cursor-pointer" onClick={header.column.getToggleSortingHandler()}>
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {{
+                          asc: <span className="ml-2">↑</span>,
+                          desc: <span className="ml-2">↓</span>,
+                        }[header.column.getIsSorted() as string] ?? null}
+                      </div>
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
             </TableHeader>
             <TableBody>
-              {sortedUsers.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role}</TableCell>
-                  <TableCell>
-                    <Badge variant={getStatusBadgeVariant(user.status)}>
-                      {user.status.charAt(0).toUpperCase() +
-                        user.status.slice(1)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{user.lastActive}</TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <span className="sr-only">Open menu</span>
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                          onClick={() => navigator.clipboard.writeText(user.id)}
-                        >
-                          Copy user ID
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>View user</DropdownMenuItem>
-                        <DropdownMenuItem>Edit user</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">
-                          Delete user
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
+              {table.getRowModel().rows.map((row, index) => (
+                <TableRow key={row.id}>
+                  {/* Sl. No Cell */}
+                  <TableCell>{index + 1}</TableCell>
+
+                  {/* Rest of Cells */}
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                  ))}
                 </TableRow>
               ))}
             </TableBody>
           </Table>
+
+          {/* Pagination Controls */}
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex space-x-2">
+              <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+                Previous
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+                Next
+              </Button>
+            </div>
+            <span>
+              Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+            </span>
+          </div>
         </CardContent>
       </Card>
+
+      <UserModal
+        open={isModalOpen}
+        onOpenChange={(open) => {
+          setIsModalOpen(open);
+          if (!open) setEditingUser(null);
+        }}
+        onSubmit={handleAddUser}
+        editingUser={editingUser}
+      />
+
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete the user "{userToDelete?.full_name || userToDelete?.rank}"? This action cannot be
+              undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setUserToDelete(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleDeleteUser}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
 
-export default UsersTable;
+export default UsersView;

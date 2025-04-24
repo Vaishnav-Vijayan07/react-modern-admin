@@ -25,13 +25,13 @@ const AuthGuard = ({ children, requireAuth = true }: AuthGuardProps) => {
   }, [isAuthenticated, isLoading, navigate, location.pathname, requireAuth]);
 
   // Show loading state
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="flex items-center justify-center min-h-screen">
+  //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+  //     </div>
+  //   );
+  // }
 
   // If requireAuth is true and user is not authenticated, don't render children (will redirect)
   // If requireAuth is false and user is authenticated, don't render children (will redirect)

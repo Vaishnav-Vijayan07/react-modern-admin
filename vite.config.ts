@@ -9,10 +9,7 @@ export default defineConfig({
   optimizeDeps: {
     entries: ["src/main.tsx", "src/tempobook/**/*"],
   },
-  plugins: [
-    react(),
-    tempo(),
-  ],
+  plugins: [react(), tempo()],
   resolve: {
     preserveSymlinks: true,
     alias: {
@@ -22,5 +19,11 @@ export default defineConfig({
   server: {
     // @ts-ignore
     allowedHosts: true,
-  }
+  },
+  define: {
+    "import.meta.env.VITE_API_URL": JSON.stringify(
+      // process.env.VITE_API_URL || "https://blood-donation-backend-dcsz.onrender.com"
+      process.env.VITE_API_URL || "http://localhost:7700"
+    ),
+  },
 });

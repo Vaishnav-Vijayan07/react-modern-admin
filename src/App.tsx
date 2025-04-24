@@ -1,12 +1,15 @@
 import { Suspense } from "react";
-import { useRoutes, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import { RanksProvider } from "./contexts/RanksContext";
+import { OfficeTypesProvider } from "./contexts/officeTypesContext";
+import { DiaryPdfsProvider } from "./contexts/diaryPdfsContext";
+import { UsersProvider } from "./contexts/UsersContext";
 import { Toaster } from "@/components/ui/toaster";
 import Home from "./components/home";
 import LoginForm from "./components/auth/LoginForm";
 import RegistrationForm from "./components/auth/RegistrationForm";
 import AuthGuard from "./components/auth/AuthGuard";
-import routes from "tempo-routes";
 
 function App() {
   return (
@@ -38,12 +41,19 @@ function App() {
               path="/*"
               element={
                 <AuthGuard>
-                  <Home />
+                  <UsersProvider>
+                    <OfficeTypesProvider>
+                      <RanksProvider>
+                        <DiaryPdfsProvider>
+                          <Home />
+                        </DiaryPdfsProvider>
+                      </RanksProvider>
+                    </OfficeTypesProvider>
+                  </UsersProvider>
                 </AuthGuard>
               }
             />
           </Routes>
-          {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}
           <Toaster />
         </>
       </AuthProvider>
