@@ -5,10 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useRanks } from "@/contexts/RanksContext";
+import { useOfficeTypes } from "@/contexts/officeTypesContext";
 
 interface User {
   id: number;
-  rank: string;
+  rank_id: string;
   blood_group: string;
   mobile_number: string;
   email: string;
@@ -27,7 +29,7 @@ interface User {
 
 interface FormValues {
   full_name: string;
-  rank: string;
+  rank_id: number;
   blood_group: string;
   mobile_number: string;
   email: string;
@@ -48,11 +50,13 @@ interface UserModalProps {
 
 const UserModal: React.FC<UserModalProps> = ({ open, onOpenChange, onSubmit, editingUser }) => {
   console.log("editingUser?.service_start_date ", editingUser?.service_start_date?.split("T")[0]);
+  const { ranks } = useRanks();
+  const { officeTypes } = useOfficeTypes();
 
   const form = useForm<FormValues>({
     defaultValues: {
       full_name: editingUser?.full_name || "",
-      rank: editingUser?.rank || "",
+      rank_id: editingUser?.rank_id ? Number(editingUser.rank_id) : null,
       blood_group: editingUser?.blood_group || "",
       mobile_number: editingUser?.mobile_number || "",
       email: editingUser?.email || "",
@@ -71,7 +75,7 @@ const UserModal: React.FC<UserModalProps> = ({ open, onOpenChange, onSubmit, edi
     if (editingUser) {
       form.reset({
         full_name: editingUser.full_name || "",
-        rank: editingUser.rank || "",
+        rank_id: editingUser.rank_id ? Number(editingUser.rank_id) : null,
         blood_group: editingUser.blood_group || "",
         mobile_number: editingUser.mobile_number || "",
         email: editingUser.email || "",
@@ -81,13 +85,13 @@ const UserModal: React.FC<UserModalProps> = ({ open, onOpenChange, onSubmit, edi
           ? new Date(editingUser.service_start_date).toISOString().split("T")[0]
           : "",
         residential_address: editingUser.residential_address || "",
-        office_id: editingUser.office_id || 1,
+        office_id: editingUser.office_id || null,
         status: editingUser.status || "active",
       });
     } else {
       form.reset({
         full_name: "",
-        rank: "",
+        rank_id: null,
         blood_group: "",
         mobile_number: "",
         email: "",
@@ -95,7 +99,7 @@ const UserModal: React.FC<UserModalProps> = ({ open, onOpenChange, onSubmit, edi
         date_of_birth: "",
         service_start_date: "",
         residential_address: "",
-        office_id: 1,
+        office_id: null,
         status: "active",
       });
     }
@@ -144,13 +148,24 @@ const UserModal: React.FC<UserModalProps> = ({ open, onOpenChange, onSubmit, edi
               <div className="col-span-6">
                 <FormField
                   control={form.control}
-                  name="rank"
+                  name="rank_id"
                   rules={{ required: "Rank is required" }}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Rank</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="e.g., Officer" />
+                        <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value?.toString()}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select rank" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {ranks.map((rank) => (
+                              <SelectItem key={rank.id} value={rank.id.toString()}>
+                                {rank.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -309,17 +324,23 @@ const UserModal: React.FC<UserModalProps> = ({ open, onOpenChange, onSubmit, edi
                 <FormField
                   control={form.control}
                   name="office_id"
-                  rules={{ required: "Office ID is required" }}
+                  rules={{ required: "Office is required" }}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Office ID</FormLabel>
+                      <FormLabel>Office</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
-                          {...field}
-                          onChange={(e) => field.onChange(Number(e.target.value))}
-                          placeholder="e.g., 1"
-                        />
+                        <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value?.toString()}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select office" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {officeTypes?.map((office) => (
+                              <SelectItem key={office.id} value={office.id.toString()}>
+                                {office.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

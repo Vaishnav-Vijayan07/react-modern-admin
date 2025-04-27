@@ -38,7 +38,7 @@ interface Office {
 
 interface User {
   id: number;
-  rank: string;
+  rank_id: string;
   blood_group: string;
   mobile_number: string;
   email: string;
@@ -58,7 +58,7 @@ interface User {
 
 interface FormValues {
   full_name: string;
-  rank: string;
+  rank_id: number;
   blood_group: string;
   mobile_number: string;
   email: string;
@@ -104,9 +104,15 @@ const UsersView = () => {
         enableGlobalFilter: true,
       },
       {
+        header: "Rank",
+        accessorKey: "rank_name",
+        enableSorting: true,
+        enableGlobalFilter: true,
+      },
+      {
         header: "Office",
-        accessorKey: "Office.name",
-        cell: ({ row }) => row.original.Office?.name || "N/A",
+        accessorKey: "office_name",
+        cell: ({ row }) => row.original.office_name || "N/A",
         enableSorting: true,
         enableGlobalFilter: true,
       },
@@ -317,7 +323,7 @@ const UsersView = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the user "{userToDelete?.full_name || userToDelete?.rank}"? This action cannot be
+              Are you sure you want to delete the user "{userToDelete?.full_name || userToDelete?.rank_id}"? This action cannot be
               undone.
             </AlertDialogDescription>
           </AlertDialogHeader>

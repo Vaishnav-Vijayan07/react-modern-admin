@@ -4,7 +4,7 @@ import { toast } from "@/components/ui/use-toast";
 interface User {
   id: number;
   full_name: string;
-  rank: string;
+  rank_id: number;
   blood_group: string;
   mobile_number: string;
   email: string;
@@ -17,7 +17,7 @@ interface User {
 
 interface FormValues {
   full_name: string;
-  rank: string;
+  rank_id: number;
   blood_group: string;
   mobile_number: string;
   email: string;
