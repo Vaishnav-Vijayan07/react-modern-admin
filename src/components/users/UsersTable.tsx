@@ -123,6 +123,12 @@ const UsersView = () => {
         enableSorting: true,
         enableGlobalFilter: true,
       },
+      // {
+      //   header: "Last Donated Date",
+      //   accessorKey: "last_donated_date",
+      //   enableSorting: true,
+      //   enableGlobalFilter: true,
+      // },
       {
         header: "Actions",
         id: "actions",
