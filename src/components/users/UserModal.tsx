@@ -18,7 +18,7 @@ interface User {
   service_start_date: string;
   residential_address: string;
   office_id: number;
-  status?: "active" | "inactive" | "pending";
+  is_active?: boolean;
   login_id?: string;
   full_name: string;
   last_donated_date?: string | null;
@@ -38,7 +38,7 @@ interface FormValues {
   service_start_date: string;
   residential_address: string;
   office_id: number;
-  status: "active" | "inactive" | "pending";
+  is_active: boolean;
 }
 
 interface UserModalProps {
@@ -67,7 +67,7 @@ const UserModal: React.FC<UserModalProps> = ({ open, onOpenChange, onSubmit, edi
         : "",
       residential_address: editingUser?.residential_address || "",
       office_id: editingUser?.office_id || 1,
-      status: editingUser?.status || "active",
+      is_active: editingUser?.is_active || true,
     },
   });
 
@@ -86,7 +86,7 @@ const UserModal: React.FC<UserModalProps> = ({ open, onOpenChange, onSubmit, edi
           : "",
         residential_address: editingUser.residential_address || "",
         office_id: editingUser.office_id || null,
-        status: editingUser.status || "active",
+        is_active: editingUser.is_active || true,
       });
     } else {
       form.reset({
@@ -100,7 +100,7 @@ const UserModal: React.FC<UserModalProps> = ({ open, onOpenChange, onSubmit, edi
         service_start_date: "",
         residential_address: "",
         office_id: null,
-        status: "active",
+        is_active: true,
       });
     }
   }, [editingUser, form]);
@@ -182,7 +182,7 @@ const UserModal: React.FC<UserModalProps> = ({ open, onOpenChange, onSubmit, edi
                     <FormItem>
                       <FormLabel>Blood Group</FormLabel>
                       <FormControl>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <Select onValueChange={(value) => field.onChange(value === "true")} value={field.value?.toString()}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select blood group" />
                           </SelectTrigger>
@@ -249,9 +249,8 @@ const UserModal: React.FC<UserModalProps> = ({ open, onOpenChange, onSubmit, edi
                   )}
                 />
               </div>
-
-              <div className="col-span-6">
-                {!editingUser && (
+              {!editingUser && (
+                <div className="col-span-6">
                   <FormField
                     control={form.control}
                     name="password"
@@ -266,8 +265,8 @@ const UserModal: React.FC<UserModalProps> = ({ open, onOpenChange, onSubmit, edi
                       </FormItem>
                     )}
                   />
-                )}
-              </div>
+                </div>
+              )}
 
               <div className="col-span-6">
                 <FormField
@@ -351,20 +350,18 @@ const UserModal: React.FC<UserModalProps> = ({ open, onOpenChange, onSubmit, edi
               <div className="col-span-6">
                 <FormField
                   control={form.control}
-                  name="status"
-                  rules={{ required: "Status is required" }}
+                  name="is_active"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Status</FormLabel>
                       <FormControl>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <Select onValueChange={(value) => field.onChange(value === "true")} value={field.value?.toString()}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select status" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="active">Active</SelectItem>
-                            <SelectItem value="inactive">Inactive</SelectItem>
-                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="true">Active</SelectItem>
+                            <SelectItem value="false">Inactive</SelectItem>
                           </SelectContent>
                         </Select>
                       </FormControl>

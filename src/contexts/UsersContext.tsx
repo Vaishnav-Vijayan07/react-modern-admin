@@ -12,7 +12,7 @@ interface User {
   service_start_date: string;
   residential_address: string;
   office_id: number;
-  status: "active" | "inactive" | "pending";
+  is_active: boolean;
 }
 
 interface FormValues {
@@ -26,7 +26,7 @@ interface FormValues {
   service_start_date: string;
   residential_address: string;
   office_id: number;
-  status: "active" | "inactive" | "pending";
+  is_active: boolean;
 }
 
 interface UsersContextType {
