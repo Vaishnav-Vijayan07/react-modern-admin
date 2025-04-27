@@ -22,8 +22,8 @@ export default defineConfig({
   },
   define: {
     "import.meta.env.VITE_API_URL": JSON.stringify(
-      process.env.VITE_API_URL || "http://localhost:7700"
-      // process.env.VITE_API_URL || "https://blood-donation-backend-dcsz.onrender.com"
+      // process.env.VITE_API_URL || "http://localhost:7700"
+      process.env.VITE_API_URL || "https://blood-donation-backend-dcsz.onrender.com"
     ),
   },
 });
