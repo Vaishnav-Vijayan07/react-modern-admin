@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "@/components/ui/use-toast";
+import { useLocation } from "react-router";
 
 interface Rank {
   id: number;
@@ -27,6 +28,7 @@ export const RanksProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [ranks, setRanks] = useState<Rank[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const location = useLocation();
 
   const getToken = () => {
     return localStorage.getItem("token") || sessionStorage.getItem("token");
@@ -168,7 +170,9 @@ export const RanksProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   useEffect(() => {
-    fetchRanks();
+    if (location.pathname === "/ranks") {
+      fetchRanks();
+    }
   }, []);
 
   return (

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "@/components/ui/use-toast";
+import { useLocation } from "react-router";
 
 interface DiaryPdf {
   id: number;
@@ -24,6 +25,7 @@ export const DiaryPdfsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [diaryPdf, setDiaryPdf] = useState<DiaryPdf | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const location = useLocation();
 
   const getToken = () => {
     return localStorage.getItem("token") || sessionStorage.getItem("token");
@@ -103,7 +105,9 @@ export const DiaryPdfsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   useEffect(() => {
-    fetchDiaryPdf();
+    if (location.pathname == "/diary") {
+      fetchDiaryPdf();
+    }
   }, []);
 
   return (

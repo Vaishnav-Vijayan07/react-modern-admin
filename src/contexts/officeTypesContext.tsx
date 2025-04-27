@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { useLocation } from "react-router";
 
 interface OfficeType {
   id: number;
@@ -41,6 +42,8 @@ export const OfficeTypesProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+    const location = useLocation();
+  
 
   const getOfficeTypes = async () => {
     setIsLoading(true);
@@ -202,7 +205,9 @@ export const OfficeTypesProvider: React.FC<{ children: React.ReactNode }> = ({ c
   };
 
   useEffect(() => {
-    getOfficeTypes();
+    if (location.pathname === "/office-types") {
+      getOfficeTypes();
+    }
   }, []);
 
   return (
