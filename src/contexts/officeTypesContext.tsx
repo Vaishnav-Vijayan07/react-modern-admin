@@ -7,6 +7,8 @@ interface OfficeType {
   name: string;
   email: string;
   phone_number: string;
+  alternate_email: string;
+  alternate_phone_number: string;
   address: string;
 }
 
@@ -25,6 +27,8 @@ interface FormValues {
   email: string;
   phone_number: string;
   address: string;
+  alternate_email: string;
+  alternate_phone_number: string;
 }
 
 const OfficeTypesContext = createContext<OfficeTypesContextType | undefined>(undefined);
@@ -42,8 +46,7 @@ export const OfficeTypesProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
-    const location = useLocation();
-  
+  const location = useLocation();
 
   const getOfficeTypes = async () => {
     setIsLoading(true);

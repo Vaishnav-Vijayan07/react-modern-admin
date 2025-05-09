@@ -11,7 +11,12 @@ import { Loader2 } from "lucide-react";
 const formSchema = z.object({
   name: z.string().min(2, { message: "Office name must be at least 2 characters" }),
   email: z.string().email({ message: "Please enter a valid email address" }),
+  alternate_email: z.string().email({ message: "Please enter a valid email address" }),
   phone_number: z
+    .string()
+    .min(10, { message: "Phone number must be at least 10 digits" })
+    .regex(/^[0-9()\-+\s]*$/, { message: "Please enter a valid phone number" }),
+  alternate_phone_number: z
     .string()
     .min(10, { message: "Phone number must be at least 10 digits" })
     .regex(/^[0-9()\-+\s]*$/, { message: "Please enter a valid phone number" }),
@@ -26,6 +31,8 @@ interface OfficeType {
   email: string;
   phone_number: string;
   address: string;
+  alternate_email: string;
+  alternate_phone_number: string;
 }
 
 interface OfficeTypeModalProps {
@@ -44,6 +51,8 @@ const OfficeTypeModal = ({ open, onOpenChange, onSubmit, editingOffice }: Office
       email: "",
       phone_number: "",
       address: "",
+      alternate_email: "",
+      alternate_phone_number: "",
     },
   });
 
@@ -122,10 +131,38 @@ const OfficeTypeModal = ({ open, onOpenChange, onSubmit, editingOffice }: Office
 
             <FormField
               control={form.control}
+              name="alternate_email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Alternate Email</FormLabel>
+                  <FormControl>
+                    <Input type="email" placeholder="office@example.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="phone_number"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Phone Number</FormLabel>
+                  <FormControl>
+                    <Input placeholder="(555) 123-4567" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="alternate_phone_number"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Alternate Phone Number</FormLabel>
                   <FormControl>
                     <Input placeholder="(555) 123-4567" {...field} />
                   </FormControl>
