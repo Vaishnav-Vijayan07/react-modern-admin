@@ -99,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.removeItem("token");
       }
 
-      navigate("/dashboard");
+      navigate("/users");
     } catch (error) {
       console.error("Login failed:", error);
       throw error;
