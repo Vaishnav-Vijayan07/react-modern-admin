@@ -108,7 +108,7 @@ export const DiaryPdfsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     if (location.pathname == "/diary") {
       fetchDiaryPdf();
     }
-  }, []);
+  }, [location.pathname]);
 
   return (
     <DiaryPdfsContext.Provider value={{ diaryPdf, isLoading, error, fetchDiaryPdf, uploadDiaryPdf }}>

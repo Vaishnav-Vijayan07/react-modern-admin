@@ -211,7 +211,7 @@ export const OfficeTypesProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (location.pathname === "/office-types") {
       getOfficeTypes();
     }
-  }, []);
+  }, [location.pathname]);
 
   return (
     <OfficeTypesContext.Provider

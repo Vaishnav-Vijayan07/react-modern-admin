@@ -173,7 +173,7 @@ export const RanksProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (location.pathname === "/ranks") {
       fetchRanks();
     }
-  }, []);
+  }, [location.pathname]);
 
   return (
     <RanksContext.Provider value={{ ranks, isLoading, error, addRank, updateRank, deleteRank }}>{children}</RanksContext.Provider>
