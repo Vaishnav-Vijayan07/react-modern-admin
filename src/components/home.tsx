@@ -118,12 +118,13 @@ const DesktopSidebar = () => {
         <h2 className="text-xl font-bold">Admin Panel</h2>
       </div>
       <nav className="flex-1 p-4 space-y-1.5 mt-2">
-        <NavLink
+        {/* <NavLink
           to="/dashboard"
           active={location.pathname === "/" || location.pathname === "/dashboard"}
           icon={<LayoutDashboard className="h-5 w-5" />}
           label="Dashboard"
-        />
+        /> */}
+        <NavLink to="/users" active={location.pathname === "/users"} icon={<Users className="h-5 w-5" />} label="Users" />
         <NavLink
           to="/office-types"
           active={location.pathname === "/office-types"}
@@ -132,7 +133,6 @@ const DesktopSidebar = () => {
         />
         <NavLink to="/ranks" active={location.pathname === "/ranks"} icon={<Award className="h-5 w-5" />} label="Ranks" />
 
-        <NavLink to="/users" active={location.pathname === "/users"} icon={<Users className="h-5 w-5" />} label="Users" />
         <NavLink to="/diary" active={location.pathname === "/diary"} icon={<FileBarChart className="h-5 w-5" />} label="Diary" />
       </nav>
       <div className="p-4 border-t mt-auto">
@@ -167,11 +167,18 @@ const MobileSidebar = ({ closeMobileMenu }: { closeMobileMenu: () => void }) => 
         </Button>
       </div>
       <nav className="flex-1 p-4 space-y-1.5 mt-2">
-        <NavLink
+        {/* <NavLink
           to="/dashboard"
           active={location.pathname === "/" || location.pathname === "/dashboard"}
           icon={<LayoutDashboard className="h-5 w-5" />}
           label="Dashboard"
+          onClick={closeMobileMenu}
+        /> */}
+        <NavLink
+          to="/users"
+          active={location.pathname === "/users"}
+          icon={<Users className="h-5 w-5" />}
+          label="Users"
           onClick={closeMobileMenu}
         />
         <NavLink
@@ -183,13 +190,6 @@ const MobileSidebar = ({ closeMobileMenu }: { closeMobileMenu: () => void }) => 
         />
         <NavLink to="/ranks" active={location.pathname === "/ranks"} icon={<Award className="h-5 w-5" />} label="Ranks" />
 
-        <NavLink
-          to="/users"
-          active={location.pathname === "/users"}
-          icon={<Users className="h-5 w-5" />}
-          label="Users"
-          onClick={closeMobileMenu}
-        />
         <NavLink
           to="/diary"
           active={location.pathname === "/diary"}

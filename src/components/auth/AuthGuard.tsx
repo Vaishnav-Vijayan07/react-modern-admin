@@ -19,7 +19,7 @@ const AuthGuard = ({ children, requireAuth = true }: AuthGuardProps) => {
         navigate("/login", { state: { from: location.pathname } });
       } else if (!requireAuth && isAuthenticated) {
         // Redirect to dashboard if user is already authenticated and tries to access login/register
-        navigate("/dashboard");
+        navigate("/users");
       }
     }
   }, [isAuthenticated, isLoading, navigate, location.pathname, requireAuth]);
