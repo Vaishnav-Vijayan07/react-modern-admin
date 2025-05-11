@@ -91,6 +91,12 @@ const UsersView = () => {
         enableGlobalFilter: true,
       },
       {
+        header: "Login ID",
+        accessorKey: "login_id",
+        enableSorting: true,
+        enableGlobalFilter: true,
+      },
+      {
         header: "Email",
         accessorKey: "email",
         enableSorting: true,
