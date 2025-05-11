@@ -208,7 +208,7 @@ export const OfficeTypesProvider: React.FC<{ children: React.ReactNode }> = ({ c
   };
 
   useEffect(() => {
-    if (location.pathname === "/office-types") {
+    if (location.pathname === "/office-types" || location.pathname === "/users") {
       getOfficeTypes();
     }
   }, [location.pathname]);

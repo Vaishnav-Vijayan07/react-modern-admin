@@ -182,7 +182,7 @@ const UserModal: React.FC<UserModalProps> = ({ open, onOpenChange, onSubmit, edi
                     <FormItem>
                       <FormLabel>Blood Group</FormLabel>
                       <FormControl>
-                        <Select onValueChange={(value) => field.onChange(value === "true")} value={field.value?.toString()}>
+                        <Select onValueChange={field.onChange} value={field.value?.toString()}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select blood group" />
                           </SelectTrigger>

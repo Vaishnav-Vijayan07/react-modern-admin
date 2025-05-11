@@ -170,7 +170,7 @@ export const RanksProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   useEffect(() => {
-    if (location.pathname === "/ranks") {
+    if (location.pathname === "/ranks" || location.pathname === "/users") {
       fetchRanks();
     }
   }, [location.pathname]);
