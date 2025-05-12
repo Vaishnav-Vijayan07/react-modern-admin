@@ -89,8 +89,8 @@ const Home = () => {
           {/* Content Area */}
           <main className="flex-1 overflow-auto p-4 lg:p-6 bg-background">
             <Routes>
-              <Route path="/" element={<DashboardView />} />
-              <Route path="/dashboard" element={<DashboardView />} />
+              <Route path="/" element={<UsersTable />} />
+              {/* <Route path="/dashboard" element={<DashboardView />} /> */}
               <Route path="/users" element={<UsersTable />} />
               <Route path="/reports" element={<ReportsView />} />
               <Route path="/settings" element={<SettingsView />} />
@@ -124,7 +124,12 @@ const DesktopSidebar = () => {
           icon={<LayoutDashboard className="h-5 w-5" />}
           label="Dashboard"
         /> */}
-        <NavLink to="/users" active={location.pathname === "/users"} icon={<Users className="h-5 w-5" />} label="Users" />
+        <NavLink
+          to="/users"
+          active={location.pathname === "/users" || location.pathname === "/"}
+          icon={<Users className="h-5 w-5" />}
+          label="Users"
+        />
         <NavLink
           to="/office-types"
           active={location.pathname === "/office-types"}
@@ -176,7 +181,7 @@ const MobileSidebar = ({ closeMobileMenu }: { closeMobileMenu: () => void }) => 
         /> */}
         <NavLink
           to="/users"
-          active={location.pathname === "/users"}
+          active={location.pathname === "/users" || location.pathname === "/"}
           icon={<Users className="h-5 w-5" />}
           label="Users"
           onClick={closeMobileMenu}
